@@ -5,10 +5,10 @@ import random
 
 def remove_chastisements(schoolkid):
     schoolkid_name = get_schoolkid(schoolkid)
-    person_remark = Chastisement.objects.filter(schoolkid=schoolkid_name)
+    person_remarks = Chastisement.objects.filter(schoolkid=schoolkid_name)
 
-    for person in person_remark:
-        person.delete()
+    for remark in person_remarks:
+        remark.delete()
 
 
 def fix_marks(schoolkid):
@@ -29,8 +29,8 @@ def create_commendation(schoolkid, lesson_subject):
 
     random_praise = random.choice(praise)
 
-    schoolkid = get_schoolkid(schoolkid)
-    year_of_study, group_letter = schoolkid.year_of_study, schoolkid.group_letter
+    schoolkid_name = get_schoolkid(schoolkid)
+    year_of_study, group_letter = schoolkid_name.year_of_study, schoolkid_name.group_letter
 
     lessons = Lesson.objects.filter(
         year_of_study=year_of_study, group_letter=group_letter, subject__title=lesson_subject
