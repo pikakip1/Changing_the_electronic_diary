@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist,MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from datacenter.models import Schoolkid, Chastisement, Commendation, Lesson, Mark
 import random
 
@@ -49,11 +49,11 @@ def create_commendation(schoolkid, lesson_subject):
 
 def get_schoolkid(schoolkid):
     errors = {
-        'MultipleObjectsReturned': 'Больше одного совпадения',
-        'DoesNotExist': 'Совпадений нет'
+        'MultipleObjectsReturned': 'Больше одного совпадения, добавьте отчество',
+        'DoesNotExist': f'Ученик {schoolkid} не найден'
     }
 
     try:
         return Schoolkid.objects.get(full_name__contains=schoolkid)
     except (MultipleObjectsReturned, ObjectDoesNotExist) as er:
-        raise ValueError(errors[er.__class__.__name__])
+        raise er(errors[er.__class__.__name__])
