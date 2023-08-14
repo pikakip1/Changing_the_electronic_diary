@@ -2,6 +2,11 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from datacenter.models import Schoolkid, Chastisement, Commendation, Lesson, Mark
 import random
 
+COMMENDABLE_REVIEWS = (
+        'Ты меня очень обрадовал!', 'Именно этого я давно ждал от тебя!', 'Отлично!',
+        'С каждым разом у тебя получается всё лучше!'
+    )
+
 
 def remove_chastisements(schoolkid):
     schoolkid_name = get_schoolkid(schoolkid)
@@ -14,12 +19,7 @@ def fix_marks(schoolkid):
 
 
 def create_commendation(schoolkid, lesson_subject):
-    praise = (
-        'Ты меня очень обрадовал!', 'Именно этого я давно ждал от тебя!', 'Отлично!',
-        'С каждым разом у тебя получается всё лучше!'
-    )
-
-    random_praise = random.choice(praise)
+    random_praise = random.choice(COMMENDABLE_REVIEWS)
 
     schoolkid_name = get_schoolkid(schoolkid)
     year_of_study, group_letter = schoolkid_name.year_of_study, schoolkid_name.group_letter
@@ -28,11 +28,11 @@ def create_commendation(schoolkid, lesson_subject):
         year_of_study=year_of_study, group_letter=group_letter, subject__title=lesson_subject
     )
 
-    last_lesson = lessons.last()
+    last_lesson = lessons.order_by('date').last()
 
     try:
         Commendation.objects.create(
-            text=random_praise, created=last_lesson.date, schoolkid=schoolkid, subject=last_lesson.subject,
+            text=random_praise, created=last_lesson.date, schoolkid=schoolkid_name, subject=last_lesson.subject,
             teacher=last_lesson.teacher
         )
     except AttributeError:
@@ -48,4 +48,4 @@ def get_schoolkid(schoolkid):
     try:
         return Schoolkid.objects.get(full_name__contains=schoolkid)
     except (MultipleObjectsReturned, ObjectDoesNotExist) as er:
-        raise er(errors[er.__class__.__name__])
+        raise type(er)(errors[er.__class__.__name__])
